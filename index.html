@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1a1a2e">
-    <title>50/10 Timer</title>
+    <title>50/10 Timer with Sheets</title>
     <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIjUwLzEwIFBvbW9kb3JvIFRpbWVyIiwKICAic2hvcnRfbmFtZSI6ICI1MC8xMCBUaW1lciIsCiAgInN0YXJ0X3VybCI6ICIuLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzFhMWEyZSIsCiAgInRoZW1lX2NvbG9yIjogIiMxYTFhMmUiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWwsJTNDc3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDEwMCAxMDAnJTNFJTNDcmVjdCBmaWxsPSclMjMxYTFhMmUnIHdpZHRoPScxMDAnIGhlaWdodD0nMTAwJy8lM0UlM0N0ZXh0IHg9JzUwJTI1JyB5PSc1MCUyNScgZm9udC1zaXplPSc1MCcgZmlsbD0nJTIzZmY2YjZiJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyBkeT0nLjNlbSclM0U1MCUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJyUzRSUzQ3JlY3QgZmlsbD0nJTIzMWExYTJlJyB3aWR0aD0nMTAwJyBoZWlnaHQ9JzEwMCcvJTNFJTNDdGV4dCB4PSc1MCUyNScgeT0nNTAlMjUnIGZvbnQtc2l6ZT0nNTAnIGZpbGw9JyUyM2ZmNmI2YicgdGV4dC1hbmNob3I9J21pZGRsZScgZHk9Jy4zZW0nJTNFNTAlM0MvdGV4dCUzRSUzQy9zdmclM0UiLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9">
     <style>
         * {
@@ -113,35 +113,134 @@
             opacity: 0.7;
         }
 
-        .info {
-            margin-top: 40px;
+        .setup-section {
+            margin-top: 30px;
             padding: 20px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
-            font-size: 14px;
-            line-height: 1.6;
+            text-align: left;
         }
 
-        .info h3 {
-            margin-bottom: 10px;
+        .setup-section h3 {
             color: #4ecdc4;
+            margin-bottom: 15px;
         }
 
-        .notification-status {
-            margin-top: 15px;
-            padding: 10px;
+        .setup-section input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #2d3748;
             border-radius: 10px;
+            background: #1a1a2e;
+            color: #eee;
+            font-size: 14px;
+        }
+
+        .setup-section input:focus {
+            outline: none;
+            border-color: #4ecdc4;
+        }
+
+        .setup-section .status-indicator {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
             font-size: 13px;
         }
 
-        .notification-status.enabled {
+        .setup-section .status-indicator.connected {
             background: rgba(78, 205, 196, 0.2);
             color: #4ecdc4;
         }
 
-        .notification-status.disabled {
+        .setup-section .status-indicator.disconnected {
             background: rgba(255, 107, 107, 0.2);
             color: #ff6b6b;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1a2e;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content h2 {
+            color: #ff6b6b;
+            margin-bottom: 20px;
+        }
+
+        .modal-content input,
+        .modal-content textarea,
+        .modal-content select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #2d3748;
+            border-radius: 10px;
+            background: #16213e;
+            color: #eee;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .modal-content textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .modal-content input:focus,
+        .modal-content textarea:focus,
+        .modal-content select:focus {
+            outline: none;
+            border-color: #4ecdc4;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            color: #4ecdc4;
+            font-weight: 600;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+        }
+
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            font-size: 13px;
+            line-height: 1.6;
         }
 
         @media (max-width: 480px) {
@@ -157,7 +256,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🍅 50/10 Timer</h1>
+        <h1>🍅 50/10 Timer + Sheets</h1>
         
         <div class="status" id="status">Ready to Start</div>
         
@@ -186,21 +285,56 @@
             Sessions completed: <strong id="sessionCount">0</strong>
         </div>
 
-        <div class="notification-status disabled" id="notificationStatus">
-            Notifications: Disabled
+        <div class="setup-section">
+            <h3>📊 Google Sheets Setup</h3>
+            <input 
+                type="text" 
+                id="sheetsUrl" 
+                placeholder="Paste your Google Apps Script URL here"
+                oninput="saveSettings()"
+            >
+            <div class="status-indicator disconnected" id="sheetsStatus">
+                Not configured - See instructions below
+            </div>
+            <div class="info">
+                <strong>Setup Instructions:</strong><br>
+                1. Create a new Google Sheet<br>
+                2. Go to Extensions → Apps Script<br>
+                3. Copy the script from the instructions<br>
+                4. Deploy as Web App<br>
+                5. Paste the URL above
+            </div>
         </div>
-        
-        <div class="info">
-            <h3>How it works:</h3>
-            <p>• Work for 50 minutes</p>
-            <p>• Take a 10-minute break</p>
-            <p>• Get a notification to open Google Keep and log your progress</p>
-            <p>• Repeat automatically</p>
+    </div>
+
+    <!-- Log Entry Modal -->
+    <div class="modal" id="logModal">
+        <div class="modal-content">
+            <h2>🎉 Session Complete!</h2>
+            <p style="opacity: 0.8; margin-bottom: 20px;">Log what you accomplished in the last 50 minutes:</p>
+            
+            <label for="categoryInput">Category/Project:</label>
+            <input 
+                type="text" 
+                id="categoryInput" 
+                placeholder="e.g., Work, Study, Personal Project"
+            >
+            
+            <label for="descriptionInput">What did you accomplish?</label>
+            <textarea 
+                id="descriptionInput" 
+                placeholder="Describe what you worked on..."
+            ></textarea>
+            
+            <div class="modal-buttons">
+                <button class="primary" onclick="submitLog()">Save to Sheets</button>
+                <button class="secondary" onclick="skipLog()">Skip</button>
+            </div>
         </div>
     </div>
 
     <script>
-        let timeLeft = 50 * 60; // 50 minutes in seconds
+        let timeLeft = 50 * 60;
         let isRunning = false;
         let isWorkSession = true;
         let interval = null;
@@ -216,28 +350,49 @@
         const resetBtn = document.getElementById('resetBtn');
         const sessionCountDisplay = document.getElementById('sessionCount');
         const progressCircle = document.getElementById('progressCircle');
-        const notificationStatus = document.getElementById('notificationStatus');
+        const sheetsUrlInput = document.getElementById('sheetsUrl');
+        const sheetsStatus = document.getElementById('sheetsStatus');
+        const logModal = document.getElementById('logModal');
+        const categoryInput = document.getElementById('categoryInput');
+        const descriptionInput = document.getElementById('descriptionInput');
         
         const circumference = 2 * Math.PI * 90;
         progressCircle.style.strokeDasharray = `${circumference} ${circumference}`;
         progressCircle.style.strokeDashoffset = circumference;
 
-        // Request notification permission on load
-        if ('Notification' in window) {
-            if (Notification.permission === 'default') {
-                Notification.requestPermission().then(updateNotificationStatus);
-            } else {
-                updateNotificationStatus();
+        // Load saved settings
+        function loadSettings() {
+            const savedUrl = localStorage.getItem('sheetsUrl');
+            const savedCategory = localStorage.getItem('lastCategory');
+            
+            if (savedUrl) {
+                sheetsUrlInput.value = savedUrl;
+                updateSheetsStatus();
+            }
+            
+            if (savedCategory) {
+                categoryInput.value = savedCategory;
+            }
+            
+            const savedSessions = localStorage.getItem('sessionsCompleted');
+            if (savedSessions) {
+                sessionsCompleted = parseInt(savedSessions);
+                sessionCountDisplay.textContent = sessionsCompleted;
             }
         }
 
-        function updateNotificationStatus() {
-            if ('Notification' in window && Notification.permission === 'granted') {
-                notificationStatus.textContent = 'Notifications: Enabled ✓';
-                notificationStatus.className = 'notification-status enabled';
+        function saveSettings() {
+            localStorage.setItem('sheetsUrl', sheetsUrlInput.value);
+            updateSheetsStatus();
+        }
+
+        function updateSheetsStatus() {
+            if (sheetsUrlInput.value.trim()) {
+                sheetsStatus.textContent = '✓ Connected to Google Sheets';
+                sheetsStatus.className = 'status-indicator connected';
             } else {
-                notificationStatus.textContent = 'Notifications: Disabled (Click "Allow" when prompted)';
-                notificationStatus.className = 'notification-status disabled';
+                sheetsStatus.textContent = 'Not configured - See instructions below';
+                sheetsStatus.className = 'status-indicator disconnected';
             }
         }
 
@@ -262,24 +417,77 @@
             updateProgress();
         }
 
+        function showLogModal() {
+            logModal.classList.add('active');
+            descriptionInput.focus();
+        }
+
+        function hideLogModal() {
+            logModal.classList.remove('active');
+            descriptionInput.value = '';
+        }
+
+        async function submitLog() {
+            const category = categoryInput.value.trim() || 'Uncategorized';
+            const description = descriptionInput.value.trim() || 'No description';
+            
+            localStorage.setItem('lastCategory', category);
+            
+            await sendToSheets({
+                timestamp: new Date().toISOString(),
+                sessionNumber: sessionsCompleted,
+                category: category,
+                description: description
+            });
+            
+            hideLogModal();
+        }
+
+        function skipLog() {
+            hideLogModal();
+        }
+
+        async function sendToSheets(data) {
+            const url = sheetsUrlInput.value.trim();
+            
+            if (!url) {
+                console.log('No Sheets URL configured');
+                return;
+            }
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                console.log('Data sent to Google Sheets:', data);
+            } catch (error) {
+                console.error('Error sending to Sheets:', error);
+            }
+        }
+
         function showNotification() {
             if ('Notification' in window && Notification.permission === 'granted') {
-                const notification = new Notification('Time to Log Your Progress! 📝', {
-                    body: 'Click here to open Google Keep and track what you accomplished.',
+                const notification = new Notification('Session Complete! 📝', {
+                    body: 'Time to log your progress!',
                     icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect fill="%231a1a2e" width="100" height="100"/%3E%3Ctext x="50%" y="50%" font-size="50" fill="%23ff6b6b" text-anchor="middle" dy=".3em"%3E50%3C/text%3E%3C/svg%3E',
-                    requireInteraction: true,
+                    requireInteraction: false,
                     tag: 'pomodoro-timer'
                 });
 
                 notification.onclick = () => {
-                    window.open('https://keep.google.com', '_blank');
+                    window.focus();
                     notification.close();
                 };
             }
         }
 
         function playSound() {
-            // Create a simple beep sound
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
@@ -307,16 +515,17 @@
                 if (isWorkSession) {
                     sessionsCompleted++;
                     sessionCountDisplay.textContent = sessionsCompleted;
-                    showNotification();
-                    playSound();
+                    localStorage.setItem('sessionsCompleted', sessionsCompleted);
                     
-                    // Switch to break
+                    playSound();
+                    showNotification();
+                    showLogModal();
+                    
                     isWorkSession = false;
                     timeLeft = BREAK_TIME;
                 } else {
                     playSound();
                     
-                    // Switch back to work
                     isWorkSession = true;
                     timeLeft = WORK_TIME;
                 }
@@ -332,9 +541,8 @@
                 pauseBtn.disabled = false;
                 interval = setInterval(tick, 1000);
                 
-                // Request notification permission if not already granted
                 if ('Notification' in window && Notification.permission === 'default') {
-                    Notification.requestPermission().then(updateNotificationStatus);
+                    Notification.requestPermission();
                 }
             }
         }
@@ -356,10 +564,18 @@
             updateDisplay();
         }
 
-        // Initialize display
+        // Close modal when clicking outside
+        logModal.addEventListener('click', (e) => {
+            if (e.target === logModal) {
+                hideLogModal();
+            }
+        });
+
+        // Initialize
+        loadSettings();
         updateDisplay();
 
-        // Wake lock to prevent screen from sleeping during timer
+        // Wake lock
         let wakeLock = null;
         async function requestWakeLock() {
             try {
@@ -371,10 +587,9 @@
             }
         }
 
-        // Request wake lock when timer starts
         startBtn.addEventListener('click', requestWakeLock);
 
-        // Service Worker registration for PWA
+        // Service Worker
         if ('serviceWorker' in navigator) {
             const swCode = `
                 self.addEventListener('install', (e) => {

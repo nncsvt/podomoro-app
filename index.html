@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>50/10 Timer</title>
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIjUwLzEwIFBvbW9kb3JvIFRpbWVyIiwKICAic2hvcnRfbmFtZSI6ICI1MC8xMCBUaW1lciIsCiAgInN0YXJ0X3VybCI6ICIuLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzFhMWEyZSIsCiAgInRoZW1lX2NvbG9yIjogIiMxYTFhMmUiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWwsJTNDc3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDEwMCAxMDAnJTNFJTNDcmVjdCBmaWxsPSclMjMxYTFhMmUnIHdpZHRoPScxMDAnIGhlaWdodD0nMTAwJy8lM0UlM0N0ZXh0IHg9JzUwJTI1JyB5PSc1MCUyNScgZm9udC1zaXplPSc1MCcgZmlsbD0nJTIzZmY2YjZiJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyBkeT0nLjNlbSclM0U1MCUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJyUzRSUzQ3JlY3QgZmlsbD0nJTIzMWExYTJlJyB3aWR0aD0nMTAwJyBoZWlnaHQ9JzEwMCcvJTNFJTNDdGV4dCB4PSc1MCUyNScgeT0nNTAlMjUnIGZvbnQtc2l6ZT0nNTAnIGZpbGw9JyUyM2ZmNmI2YicgdGV4dC1hbmNob3I9J21pZGRsZScgZHk9Jy4zZW0nJTNFNTAlM0MvdGV4dCUzRSUzQy9zdmclM0UiLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eee;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .timer-display {
+            font-size: 72px;
+            font-weight: 700;
+            margin: 30px 0;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 0 30px rgba(255, 107, 107, 0.3);
+        }
+
+        .status {
+            font-size: 24px;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .status.work {
+            color: #ff6b6b;
+        }
+
+        .status.break {
+            color: #4ecdc4;
+        }
+
+        .progress-ring {
+            margin: 20px auto;
+        }
+
+        .progress-ring-circle {
+            transition: stroke-dashoffset 1s linear;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button.primary {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+        }
+
+        button.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        button.secondary {
+            background: #2d3748;
+            color: white;
+        }
+
+        button.secondary:hover {
+            background: #374151;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .session-count {
+            margin-top: 30px;
+            font-size: 18px;
+            opacity: 0.7;
+        }
+
+        .info {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .info h3 {
+            margin-bottom: 10px;
+            color: #4ecdc4;
+        }
+
+        .notification-status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        .notification-status.enabled {
+            background: rgba(78, 205, 196, 0.2);
+            color: #4ecdc4;
+        }
+
+        .notification-status.disabled {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+        }
+
+        @media (max-width: 480px) {
+            .timer-display {
+                font-size: 56px;
+            }
+            
+            .status {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍅 50/10 Timer</h1>
+        
+        <div class="status" id="status">Ready to Start</div>
+        
+        <svg class="progress-ring" width="200" height="200">
+            <circle
+                class="progress-ring-circle"
+                stroke="#ff6b6b"
+                stroke-width="8"
+                fill="transparent"
+                r="90"
+                cx="100"
+                cy="100"
+                id="progressCircle"
+            />
+        </svg>
+        
+        <div class="timer-display" id="timer">50:00</div>
+        
+        <div class="controls">
+            <button class="primary" id="startBtn" onclick="startTimer()">Start</button>
+            <button class="secondary" id="pauseBtn" onclick="pauseTimer()" disabled>Pause</button>
+            <button class="secondary" id="resetBtn" onclick="resetTimer()">Reset</button>
+        </div>
+        
+        <div class="session-count">
+            Sessions completed: <strong id="sessionCount">0</strong>
+        </div>
+
+        <div class="notification-status disabled" id="notificationStatus">
+            Notifications: Disabled
+        </div>
+        
+        <div class="info">
+            <h3>How it works:</h3>
+            <p>• Work for 50 minutes</p>
+            <p>• Take a 10-minute break</p>
+            <p>• Get a notification to open Google Keep and log your progress</p>
+            <p>• Repeat automatically</p>
+        </div>
+    </div>
+
+    <script>
+        let timeLeft = 50 * 60; // 50 minutes in seconds
+        let isRunning = false;
+        let isWorkSession = true;
+        let interval = null;
+        let sessionsCompleted = 0;
+        
+        const WORK_TIME = 50 * 60;
+        const BREAK_TIME = 10 * 60;
+        
+        const timerDisplay = document.getElementById('timer');
+        const statusDisplay = document.getElementById('status');
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const sessionCountDisplay = document.getElementById('sessionCount');
+        const progressCircle = document.getElementById('progressCircle');
+        const notificationStatus = document.getElementById('notificationStatus');
+        
+        const circumference = 2 * Math.PI * 90;
+        progressCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+        progressCircle.style.strokeDashoffset = circumference;
+
+        // Request notification permission on load
+        if ('Notification' in window) {
+            if (Notification.permission === 'default') {
+                Notification.requestPermission().then(updateNotificationStatus);
+            } else {
+                updateNotificationStatus();
+            }
+        }
+
+        function updateNotificationStatus() {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                notificationStatus.textContent = 'Notifications: Enabled ✓';
+                notificationStatus.className = 'notification-status enabled';
+            } else {
+                notificationStatus.textContent = 'Notifications: Disabled (Click "Allow" when prompted)';
+                notificationStatus.className = 'notification-status disabled';
+            }
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateProgress() {
+            const totalTime = isWorkSession ? WORK_TIME : BREAK_TIME;
+            const progress = (totalTime - timeLeft) / totalTime;
+            const offset = circumference - progress * circumference;
+            progressCircle.style.strokeDashoffset = offset;
+            progressCircle.style.stroke = isWorkSession ? '#ff6b6b' : '#4ecdc4';
+        }
+
+        function updateDisplay() {
+            timerDisplay.textContent = formatTime(timeLeft);
+            statusDisplay.textContent = isWorkSession ? '🔥 Work Time' : '☕ Break Time';
+            statusDisplay.className = isWorkSession ? 'status work' : 'status break';
+            updateProgress();
+        }
+
+        function showNotification() {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                const notification = new Notification('Time to Log Your Progress! 📝', {
+                    body: 'Click here to open Google Keep and track what you accomplished.',
+                    icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect fill="%231a1a2e" width="100" height="100"/%3E%3Ctext x="50%" y="50%" font-size="50" fill="%23ff6b6b" text-anchor="middle" dy=".3em"%3E50%3C/text%3E%3C/svg%3E',
+                    requireInteraction: true,
+                    tag: 'pomodoro-timer'
+                });
+
+                notification.onclick = () => {
+                    window.open('https://keep.google.com', '_blank');
+                    notification.close();
+                };
+            }
+        }
+
+        function playSound() {
+            // Create a simple beep sound
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        function tick() {
+            if (!isRunning) return;
+            
+            timeLeft--;
+            updateDisplay();
+            
+            if (timeLeft <= 0) {
+                if (isWorkSession) {
+                    sessionsCompleted++;
+                    sessionCountDisplay.textContent = sessionsCompleted;
+                    showNotification();
+                    playSound();
+                    
+                    // Switch to break
+                    isWorkSession = false;
+                    timeLeft = BREAK_TIME;
+                } else {
+                    playSound();
+                    
+                    // Switch back to work
+                    isWorkSession = true;
+                    timeLeft = WORK_TIME;
+                }
+                
+                updateDisplay();
+            }
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                startBtn.disabled = true;
+                pauseBtn.disabled = false;
+                interval = setInterval(tick, 1000);
+                
+                // Request notification permission if not already granted
+                if ('Notification' in window && Notification.permission === 'default') {
+                    Notification.requestPermission().then(updateNotificationStatus);
+                }
+            }
+        }
+
+        function pauseTimer() {
+            isRunning = false;
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+            if (interval) {
+                clearInterval(interval);
+                interval = null;
+            }
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            isWorkSession = true;
+            timeLeft = WORK_TIME;
+            updateDisplay();
+        }
+
+        // Initialize display
+        updateDisplay();
+
+        // Wake lock to prevent screen from sleeping during timer
+        let wakeLock = null;
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+            } catch (err) {
+                console.log('Wake Lock error:', err);
+            }
+        }
+
+        // Request wake lock when timer starts
+        startBtn.addEventListener('click', requestWakeLock);
+
+        // Service Worker registration for PWA
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                self.addEventListener('install', (e) => {
+                    self.skipWaiting();
+                });
+                
+                self.addEventListener('activate', (e) => {
+                    self.clients.claim();
+                });
+            `;
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(swUrl);
+        }
+    </script>
+</body>
+</html>

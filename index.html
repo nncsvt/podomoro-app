@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1a1a2e">
-    <title>50/10 Timer with Sheets</title>
+    <title>50/10 Timer + Sheets</title>
     <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIjUwLzEwIFBvbW9kb3JvIFRpbWVyIiwKICAic2hvcnRfbmFtZSI6ICI1MC8xMCBUaW1lciIsCiAgInN0YXJ0X3VybCI6ICIuLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzFhMWEyZSIsCiAgInRoZW1lX2NvbG9yIjogIiMxYTFhMmUiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWwsJTNDc3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDEwMCAxMDAnJTNFJTNDcmVjdCBmaWxsPSclMjMxYTFhMmUnIHdpZHRoPScxMDAnIGhlaWdodD0nMTAwJy8lM0UlM0N0ZXh0IHg9JzUwJTI1JyB5PSc1MCUyNScgZm9udC1zaXplPSc1MCcgZmlsbD0nJTIzZmY2YjZiJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyBkeT0nLjNlbSclM0U1MCUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJyUzRSUzQ3JlY3QgZmlsbD0nJTIzMWExYTJlJyB3aWR0aD0nMTAwJyBoZWlnaHQ9JzEwMCcvJTNFJTNDdGV4dCB4PSc1MCUyNScgeT0nNTAlMjUnIGZvbnQtc2l6ZT0nNTAnIGZpbGw9JyUyM2ZmNmI2YicgdGV4dC1hbmNob3I9J21pZGRsZScgZHk9Jy4zZW0nJTNFNTAlM0MvdGV4dCUzRSUzQy9zdmclM0UiLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9">
     <style>
         * {
@@ -13,36 +13,53 @@
             box-sizing: border-box;
         }
 
-        body {  
+        body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             color: #eee;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             padding: 20px;
+            overflow-x: hidden;
         }
 
-        .container {
-            text-align: center;
-            max-width: 500px;
+        .main-container {
             width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
         }
 
-        .timer-display {
-            font-size: 72px;
-            font-weight: 700;
-            margin: 30px 0;
-            font-variant-numeric: tabular-nums;
-            text-shadow: 0 0 30px rgba(255, 107, 107, 0.3);
+        .timer-section {
+            text-align: center;
+            width: 100%;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .status {
-            font-size: 24px;
-            margin-bottom: 20px;
+            font-size: 32px;
+            margin-bottom: 30px;
             opacity: 0.9;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 3px;
         }
 
         .status.work {
@@ -53,8 +70,19 @@
             color: #4ecdc4;
         }
 
+        .timer-circle-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 0 auto 40px;
+        }
+
         .progress-ring {
-            margin: 20px auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
         }
 
         .progress-ring-circle {
@@ -63,100 +91,130 @@
             transform-origin: 50% 50%;
         }
 
+        .timer-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 120px;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -5px;
+            color: #ffffff;
+        }
+
         .controls {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             justify-content: center;
-            margin: 30px 0;
+            margin: 40px 0;
             flex-wrap: wrap;
         }
 
         button {
-            padding: 15px 30px;
-            font-size: 16px;
+            padding: 20px 40px;
+            font-size: 18px;
             border: none;
-            border-radius: 25px;
+            border-radius: 50px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
             transition: all 0.3s ease;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            min-width: 140px;
         }
 
         button.primary {
             background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
             color: white;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
         }
 
         button.primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.5);
         }
 
         button.secondary {
-            background: #2d3748;
+            background: rgba(255, 255, 255, 0.1);
             color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         button.secondary:hover {
-            background: #374151;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
         button:disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
+            transform: none !important;
         }
 
         .session-count {
-            margin-top: 30px;
-            font-size: 18px;
-            opacity: 0.7;
+            margin-top: 20px;
+            font-size: 24px;
+            opacity: 0.8;
+        }
+
+        .session-count strong {
+            font-size: 32px;
+            color: #4ecdc4;
         }
 
         .setup-section {
-            margin-top: 30px;
-            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            text-align: left;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .setup-section h3 {
             color: #4ecdc4;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            font-size: 24px;
         }
 
         .setup-section input {
             width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 2px solid #2d3748;
-            border-radius: 10px;
-            background: #1a1a2e;
+            padding: 15px;
+            margin: 15px 0;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
             color: #eee;
-            font-size: 14px;
+            font-size: 15px;
+            transition: all 0.3s ease;
         }
 
         .setup-section input:focus {
             outline: none;
             border-color: #4ecdc4;
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
         }
 
-        .setup-section .status-indicator {
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 8px;
-            font-size: 13px;
+        .status-indicator {
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
         }
 
-        .setup-section .status-indicator.connected {
+        .status-indicator.connected {
             background: rgba(78, 205, 196, 0.2);
             color: #4ecdc4;
+            border: 2px solid rgba(78, 205, 196, 0.3);
         }
 
-        .setup-section .status-indicator.disconnected {
+        .status-indicator.disconnected {
             background: rgba(255, 107, 107, 0.2);
             color: #ff6b6b;
+            border: 2px solid rgba(255, 107, 107, 0.3);
         }
 
         .modal {
@@ -166,10 +224,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(5px);
         }
 
         .modal.active {
@@ -177,57 +236,67 @@
         }
 
         .modal-content {
-            background: #1a1a2e;
-            padding: 30px;
-            border-radius: 20px;
-            max-width: 500px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 40px;
+            border-radius: 25px;
+            max-width: 550px;
             width: 90%;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .modal-content h2 {
             color: #ff6b6b;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            font-size: 32px;
+        }
+
+        .modal-content p {
+            opacity: 0.8;
+            margin-bottom: 25px;
+            font-size: 16px;
         }
 
         .modal-content input,
         .modal-content textarea,
         .modal-content select {
             width: 100%;
-            padding: 12px;
+            padding: 15px;
             margin: 10px 0;
-            border: 2px solid #2d3748;
-            border-radius: 10px;
-            background: #16213e;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
             color: #eee;
-            font-size: 14px;
+            font-size: 15px;
             font-family: inherit;
+            transition: all 0.3s ease;
         }
 
         .modal-content textarea {
-            min-height: 100px;
+            min-height: 120px;
             resize: vertical;
         }
 
         .modal-content input:focus,
-        .modal-content textarea:focus,
-        .modal-content select:focus {
+        .modal-content textarea:focus {
             outline: none;
             border-color: #4ecdc4;
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
         }
 
         .modal-content label {
             display: block;
-            margin-top: 15px;
-            margin-bottom: 5px;
+            margin-top: 20px;
+            margin-bottom: 8px;
             color: #4ecdc4;
             font-weight: 600;
+            font-size: 16px;
         }
 
         .modal-buttons {
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 15px;
+            margin-top: 30px;
         }
 
         .modal-buttons button {
@@ -236,57 +305,113 @@
 
         .info {
             margin-top: 20px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            font-size: 13px;
-            line-height: 1.6;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.8;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        @media (max-width: 480px) {
+        .info strong {
+            color: #4ecdc4;
+        }
+
+        @media (max-width: 768px) {
+            .timer-circle-container {
+                width: 300px;
+                height: 300px;
+            }
+
             .timer-display {
-                font-size: 56px;
+                font-size: 80px;
             }
             
             .status {
+                font-size: 24px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            button {
+                padding: 15px 30px;
+                font-size: 16px;
+                min-width: 120px;
+            }
+
+            .modal-content {
+                padding: 30px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .timer-circle-container {
+                width: 260px;
+                height: 260px;
+            }
+
+            .timer-display {
+                font-size: 64px;
+            }
+
+            .status {
                 font-size: 20px;
+                letter-spacing: 2px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .session-count {
+                font-size: 18px;
+            }
+
+            .session-count strong {
+                font-size: 24px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🍅 50/10 Timer + Sheets</h1>
-        
-        <div class="status" id="status">Ready to Start</div>
-        
-        <svg class="progress-ring" width="200" height="200">
-            <circle
-                class="progress-ring-circle"
-                stroke="#ff6b6b"
-                stroke-width="8"
-                fill="transparent"
-                r="90"
-                cx="100"
-                cy="100"
-                id="progressCircle"
-            />
-        </svg>
-        
-        <div class="timer-display" id="timer">50:00</div>
-        
-        <div class="controls">
-            <button class="primary" id="startBtn" onclick="startTimer()">Start</button>
-            <button class="secondary" id="pauseBtn" onclick="pauseTimer()" disabled>Pause</button>
-            <button class="secondary" id="resetBtn" onclick="resetTimer()">Reset</button>
-        </div>
-        
-        <div class="session-count">
-            Sessions completed: <strong id="sessionCount">0</strong>
+    <div class="main-container">
+        <div class="timer-section">
+            <h1>🍅 50/10 Focus Timer</h1>
+            
+            <div class="status" id="status">Ready to Start</div>
+            
+            <div class="timer-circle-container">
+                <svg class="progress-ring" width="400" height="400" viewBox="0 0 400 400">
+                    <circle
+                        class="progress-ring-circle"
+                        stroke="#ff6b6b"
+                        stroke-width="12"
+                        fill="transparent"
+                        r="180"
+                        cx="200"
+                        cy="200"
+                        id="progressCircle"
+                    />
+                </svg>
+                
+                <div class="timer-display" id="timer">50:00</div>
+            </div>
+            
+            <div class="controls">
+                <button class="primary" id="startBtn" onclick="startTimer()">Start</button>
+                <button class="secondary" id="pauseBtn" onclick="pauseTimer()" disabled>Pause</button>
+                <button class="secondary" id="resetBtn" onclick="resetTimer()">Reset</button>
+            </div>
+            
+            <div class="session-count">
+                Sessions completed: <strong id="sessionCount">0</strong>
+            </div>
         </div>
 
         <div class="setup-section">
-            <h3>📊 Google Sheets Setup</h3>
+            <h3>📊 Google Sheets Integration</h3>
             <input 
                 type="text" 
                 id="sheetsUrl" 
@@ -294,15 +419,15 @@
                 oninput="saveSettings()"
             >
             <div class="status-indicator disconnected" id="sheetsStatus">
-                Not configured - See instructions below
+                Not configured - Add your Apps Script URL above
             </div>
             <div class="info">
-                <strong>Setup Instructions:</strong><br>
-                1. Create a new Google Sheet<br>
-                2. Go to Extensions → Apps Script<br>
-                3. Copy the script from the instructions<br>
-                4. Deploy as Web App<br>
-                5. Paste the URL above
+                <strong>Quick Setup:</strong><br>
+                1. Create a Google Sheet<br>
+                2. Extensions → Apps Script<br>
+                3. Paste the provided script<br>
+                4. Deploy as Web App (Anyone access)<br>
+                5. Copy URL and paste above
             </div>
         </div>
     </div>
@@ -311,7 +436,7 @@
     <div class="modal" id="logModal">
         <div class="modal-content">
             <h2>🎉 Session Complete!</h2>
-            <p style="opacity: 0.8; margin-bottom: 20px;">Log what you accomplished in the last 50 minutes:</p>
+            <p>Log what you accomplished in the last 50 minutes:</p>
             
             <label for="categoryInput">Category/Project:</label>
             <input 
@@ -356,11 +481,10 @@
         const categoryInput = document.getElementById('categoryInput');
         const descriptionInput = document.getElementById('descriptionInput');
         
-        const circumference = 2 * Math.PI * 90;
+        const circumference = 2 * Math.PI * 180;
         progressCircle.style.strokeDasharray = `${circumference} ${circumference}`;
         progressCircle.style.strokeDashoffset = circumference;
 
-        // Load saved settings
         function loadSettings() {
             const savedUrl = localStorage.getItem('sheetsUrl');
             const savedCategory = localStorage.getItem('lastCategory');
@@ -391,7 +515,7 @@
                 sheetsStatus.textContent = '✓ Connected to Google Sheets';
                 sheetsStatus.className = 'status-indicator connected';
             } else {
-                sheetsStatus.textContent = 'Not configured - See instructions below';
+                sheetsStatus.textContent = 'Not configured - Add your Apps Script URL above';
                 sheetsStatus.className = 'status-indicator disconnected';
             }
         }
@@ -564,18 +688,15 @@
             updateDisplay();
         }
 
-        // Close modal when clicking outside
         logModal.addEventListener('click', (e) => {
             if (e.target === logModal) {
                 hideLogModal();
             }
         });
 
-        // Initialize
         loadSettings();
         updateDisplay();
 
-        // Wake lock
         let wakeLock = null;
         async function requestWakeLock() {
             try {
@@ -589,7 +710,6 @@
 
         startBtn.addEventListener('click', requestWakeLock);
 
-        // Service Worker
         if ('serviceWorker' in navigator) {
             const swCode = `
                 self.addEventListener('install', (e) => {
@@ -607,4 +727,3 @@
     </script>
 </body>
 </html>
-

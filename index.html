@@ -459,14 +459,14 @@
     </div>
 
     <script>
-        let timeLeft 2 * 60;
+        const WORK_TIME = 2 * 60;
+        const BREAK_TIME = 1 * 60;
+        
+        let timeLeft = WORK_TIME;
         let isRunning = false;
         let isWorkSession = true;
         let interval = null;
         let sessionsCompleted = 0;
-        
-        const WORK_TIME = 2 * 60;
-        const BREAK_TIME = 1 * 60;
         
         const timerDisplay = document.getElementById('timer');
         const statusDisplay = document.getElementById('status');
@@ -727,5 +727,3 @@
     </script>
 </body>
 </html>
-
-

@@ -459,8 +459,8 @@
     </div>
 
     <script>
-        const WORK_TIME = 50 * 60;
-        const BREAK_TIME = 10 * 60;
+        const WORK_TIME = 2 * 60;
+        const BREAK_TIME = 1 * 60;
         
         let timeLeft = WORK_TIME;
         let isRunning = false;
@@ -531,13 +531,13 @@
             const progress = (totalTime - timeLeft) / totalTime;
             const offset = circumference - progress * circumference;
             progressCircle.style.strokeDashoffset = offset;
-            progressCircle.style.stroke = isWorkSession ? '#ff6b6b' : '#4ecdc4';
+            progressCircle.style.stroke = isWorkSession? '#ff6b6b' : '#4ecdc4';
         }
 
         function updateDisplay() {
             timerDisplay.textContent = formatTime(timeLeft);
             statusDisplay.textContent = isWorkSession ? '🔥 Work Time' : '☕ Break Time';
-            statusDisplay.className = isWorkSession ? 'status work' : 'status break';
+            statusDisplay.className = isWorkSession ? 'status work': 'status break';
             updateProgress();
         }
 
